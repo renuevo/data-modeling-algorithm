@@ -1,0 +1,2 @@
+rootProject.name = 'data-modeling-algorithm'
+include 'lsa'
