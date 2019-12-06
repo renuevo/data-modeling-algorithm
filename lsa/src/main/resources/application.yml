@@ -1,1 +1,6 @@
+spring:
+  main:
+    banner-mode: 'off'
 
+data:
+  meta-data: data/meta-data-set.txt
