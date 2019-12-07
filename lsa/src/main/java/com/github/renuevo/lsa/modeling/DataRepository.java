@@ -38,7 +38,7 @@ public class DataRepository {
 
         List<String> metaDataList;         //과일 목록 List
         List<Set<String>> trainDataList = Lists.newArrayList(); //Train Data Set List
-        Set<String> rowSet = null;
+        Set<String> rowSet;
         int column;
 
         //과일 목록 load 및 train data create

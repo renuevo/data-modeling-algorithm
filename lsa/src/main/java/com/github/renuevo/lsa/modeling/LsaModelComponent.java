@@ -2,6 +2,7 @@ package com.github.renuevo.lsa.modeling;
 
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
+import com.github.renuevo.lsa.SvdDto;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,35 @@ public class LsaModelComponent {
     @Getter
     Map<String, Integer> columnMap = Maps.newHashMap();
 
-    public SingularValueDecomposition fit(Matrix matrix) {
+    /**
+     * <pre>
+     *  @methodName : fit
+     *  @author : Deokhwa.Kim
+     *  @since : 2019-12-07 오후 10:49
+     *  @summary : SVD 차원 축소
+     *  @param : [matrix, dimension]
+     *  @return : com.github.renuevo.lsa.SvdDto
+     * </pre>
+     */
+    public SvdDto fit(Matrix matrix, int dimension) {
+        SingularValueDecomposition singularValueDecomposition = matrix.svd();
+        Matrix matrixU = singularValueDecomposition.getU();
+        Matrix matrixS = singularValueDecomposition.getS();
+        Matrix matrixV = singularValueDecomposition.getV();
 
-        SingularValueDecomposition singularValueDecomposition = null;
+        log.info("[============ Matrix Dimension Print ==============]");
+        log.info("MatrixU : " + matrixU.getRowDimension() + " X " + matrix.getColumnDimension()); //T
+        log.info("MatrixS : " + matrixS.getRowDimension() + " X " + matrixS.getColumnDimension()); //S
+        log.info("MatrixV : " + matrixV.getRowDimension() + " X " + matrixV.getColumnDimension()); //D
 
-        return singularValueDecomposition;
+        matrixU = matrixU.getMatrix(0, matrixU.getColumnDimension() - 1, 0, dimension);
+        matrixS = matrixS.getMatrix(0, dimension, 0, dimension);
+        matrixV = matrixV.getMatrix(0, dimension, 0, matrixV.getColumnDimension() - 1);
+        log.info("MatrixU Reduction: " + matrixU.getRowDimension() + " X " + matrixU.getColumnDimension());
+        log.info("MatrixS Reduction: " + matrixS.getRowDimension() + " X " + matrixS.getColumnDimension());
+        log.info("MatrixV Reduction: " + matrixV.getRowDimension() + " X " + matrixV.getColumnDimension());
+
+        return new SvdDto(matrixU, matrixS, matrixV);
     }
 
     /**
@@ -36,58 +61,39 @@ public class LsaModelComponent {
      * </pre>
      */
     public Matrix createMatrix(List<Set<String>> trainDataList) {
-
-        //Column Data Hash Index
-        columnMap.clear();
-        for (Set<String> set : trainDataList) {
-            set.forEach(it -> {
-                if (!columnMap.containsKey(it))
-                    columnMap.put(it, columnMap.size());
-            });
-        }
-
-        //Create Matrix Size
-        Matrix matrix = new Matrix(trainDataList.size(), columnMap.size());
-
-        //Create Train Matrix Data
-        for (int i = 0; i < trainDataList.size(); i++) {
-            for (String key : columnMap.keySet()) {
-
-                int value = 0;
-                if (trainDataList.get(i).contains(key))
-                    value = 1;
-
-                matrix.set(i, columnMap.get(key), value);
+        Matrix matrix = null;
+        try {
+            //Column Data Hash Index
+            columnMap.clear();
+            for (Set<String> set : trainDataList) {
+                set.forEach(it -> {
+                    if (!columnMap.containsKey(it))
+                        columnMap.put(it, columnMap.size());
+                });
             }
+
+            if (columnMap.size() > trainDataList.size())
+                throw new Exception("Column is greater than Row");
+
+            //Create Matrix Size
+            matrix = new Matrix(trainDataList.size(), columnMap.size());
+
+            //Create Train Matrix Data
+            for (int i = 0; i < trainDataList.size(); i++) {
+                for (String key : columnMap.keySet()) {
+
+                    int value = 0;
+                    if (trainDataList.get(i).contains(key))
+                        value = 1;
+
+                    matrix.set(i, columnMap.get(key), value);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Create Matrix Error {}", e.getMessage(), e);
         }
+
         return matrix;
     }
 
-    /**
-     * <pre>
-     *  @methodName : cosineSimilarity
-     *  @author : Deokhwa.Kim
-     *  @since : 2019-12-06 오전 12:16
-     *  @summary : cosine 거리 계산
-     *  @param : [word1, word2]
-     *  @return : double
-     * </pre>
-     */
-    private double cosineSimilarity(List<Double> word1, List<Double> word2) {
-        double sum = 0;
-        double vectorSum = 0;
-        double word1Pow = 0;
-        double word2Pow = 0;
-
-        for (int i = 0; i < word1.size(); i++) {
-            sum += word1.get(i) * word2.get(i);
-            word1Pow += Math.pow(word1.get(i), 2);
-            if (Double.isNaN(word1Pow))
-                log.warn("Is Nan Data : " + word1.get(i));
-            word2Pow += Math.pow(word2.get(i), 2);
-        }
-        vectorSum = Math.sqrt(word1Pow) * Math.sqrt(word2Pow);
-
-        return sum / vectorSum;
-    }
 }
