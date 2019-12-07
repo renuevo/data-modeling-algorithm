@@ -57,6 +57,7 @@ public class DataRepository {
             }
         } catch (Exception e) {
             log.error("Train Data Create Error {}", e.getMessage(), e);
+            e.printStackTrace();
         }
 
         return trainDataList;

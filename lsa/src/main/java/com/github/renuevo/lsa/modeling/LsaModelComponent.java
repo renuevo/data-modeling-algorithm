@@ -91,6 +91,7 @@ public class LsaModelComponent {
             }
         } catch (Exception e) {
             log.error("Create Matrix Error {}", e.getMessage(), e);
+            e.printStackTrace();
         }
 
         return matrix;

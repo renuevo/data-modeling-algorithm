@@ -4,10 +4,12 @@ import Jama.Matrix;
 import com.github.renuevo.lsa.SvdDto;
 import com.github.renuevo.lsa.modeling.DataRepository;
 import com.github.renuevo.lsa.modeling.LsaModelComponent;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,18 +36,18 @@ public class LsaModelService {
     public void LasExample() {
 
         //Train Data Set Create
-        List<Set<String>> trainDataList = dataRepository.createTrainDataSet(45);
+        List<Set<String>> trainDataList = dataRepository.createTrainDataSet(45);    //Meta Item 보다 크게 설정
         log.info("[============ Train Data Set ==============]");
         trainDataList.forEach(System.out::println); //Train Data Print
 
         //Train Matrix Data Set Create
         Matrix matrix = lsaModelComponent.createMatrix(trainDataList);
-        Map<Integer, String> columTitleMap = lsaModelComponent.getColumnMap()
+        Map<Integer, String> columnTitleMap = lsaModelComponent.getColumnMap()
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
         log.info("[============ Train Matrix Data Set ==============]");
-        printMatrix(matrix, columTitleMap);    //Train Matrix Data Print
+        printMatrix(matrix, columnTitleMap);    //Train Matrix Data Print
 
         //Fix Matrix SVD -> S * T (column간 유사도)
         /*
@@ -63,9 +65,43 @@ public class LsaModelService {
         Matrix columnSimilarity = svdDto.getMatrixS().times(svdDto.getMatrixV()); // S * V
         log.info("Column Similarity Matrix : " + columnSimilarity.getRowDimension() + " X " + columnSimilarity.getColumnDimension());
 
+        double max = -1;
+        double min = 1;
+        String maxItem = "";
+        String minItem = "";
 
+        //LSA Analytics
+        log.info("[==========" + columnTitleMap.get(0) + "의 유사도 =========]");
+        List<Double> listA = Lists.newArrayList();
+        List<Double> listB = Lists.newArrayList();
+        for (int i = 0; i < columnSimilarity.getColumnDimension(); i++) {
+            for (int j = 0; j < columnSimilarity.getRowDimension(); j++) {
+                if (i == 0)
+                    listA.add(columnSimilarity.get(j, i));
+                else
+                    listB.add(columnSimilarity.get(j, i));
+            }
 
+            if (listB.size() > 0) {
 
+                double value = cosineSimilarity(listA, listB);
+                log.info(columnTitleMap.get(i) + " : " + value);
+
+                if(value > max) {
+                    max = value;
+                    maxItem = columnTitleMap.get(i) + " : " + value;
+                }
+                if(value < min){
+                    min = value;
+                    minItem = columnTitleMap.get(i) + " : " + value;
+                }
+
+                listB.clear();
+            }
+        }
+
+        log.info("Similarity Max Item : "+maxItem);
+        log.info("Similarity Min Item : "+minItem);
     }
 
     /**
@@ -94,7 +130,6 @@ public class LsaModelService {
         return sum / vectorSum;
     }
 
-
     /**
      * <pre>
      *  @methodName : printMatrix
@@ -105,12 +140,12 @@ public class LsaModelService {
      *  @return : void
      * </pre>
      */
-    public void printMatrix(Matrix matrix, Map<Integer, String> columTitleMap) {
+    public void printMatrix(Matrix matrix, Map<Integer, String> columnTitleMap) {
 
         System.out.printf("%6s\t", "Matrix");
 
-        for (int j = 0; j < columTitleMap.size(); j++) {
-            System.out.printf("%6s\t", columTitleMap.get(j));
+        for (int j = 0; j < columnTitleMap.size(); j++) {
+            System.out.printf("%6s\t", columnTitleMap.get(j));
         }
         System.out.println();
 
