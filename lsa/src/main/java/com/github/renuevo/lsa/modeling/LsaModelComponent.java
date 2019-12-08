@@ -36,9 +36,9 @@ public class LsaModelComponent {
         Matrix matrixV = singularValueDecomposition.getV();
 
         log.info("[============ Matrix Dimension Print ==============]");
-        log.info("MatrixU : " + matrixU.getRowDimension() + " X " + matrix.getColumnDimension()); //T
-        log.info("MatrixS : " + matrixS.getRowDimension() + " X " + matrixS.getColumnDimension()); //S
-        log.info("MatrixV : " + matrixV.getRowDimension() + " X " + matrixV.getColumnDimension()); //D
+        log.info("MatrixU : " + matrixU.getRowDimension() + " X " + matrix.getColumnDimension());
+        log.info("MatrixS : " + matrixS.getRowDimension() + " X " + matrixS.getColumnDimension());
+        log.info("MatrixV : " + matrixV.getRowDimension() + " X " + matrixV.getColumnDimension());
 
         matrixU = matrixU.getMatrix(0, matrixU.getColumnDimension() - 1, 0, dimension);
         matrixS = matrixS.getMatrix(0, dimension, 0, dimension);

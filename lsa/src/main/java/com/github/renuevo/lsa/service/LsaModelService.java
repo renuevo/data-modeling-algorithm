@@ -49,16 +49,16 @@ public class LsaModelService {
         log.info("[============ Train Matrix Data Set ==============]");
         printMatrix(matrix, columnTitleMap);    //Train Matrix Data Print
 
-        //Fix Matrix SVD -> S * T (column간 유사도)
+        //Fix Matrix SVD -> S * V (column간 유사도)
         /*
-        At×d = Tt×nSn×n(Dd×n)T
-        T : Row차원 공간에 Column만개의 단어에 대응되는 점으로 표현
-        D : Column차원 공간에 Row만개의 문서에 대응되는 점으로 표현
-        S : 차원의 중요도를 나타내는 대각행렬
+        A = USV
+        U : Row차원 공간에 Column만개의 단어에 대응되는 점으로 표현
+        S : Column차원 공간에 Row만개의 문서에 대응되는 점으로 표현
+        V : 차원의 중요도를 나타내는 대각행렬
 
-        1. ROW - 차원간의 유사도 T X S 행렬의 row 간의 유사도로 계산한다.
-        2. ROW와 Column - ROW S X D 행렬의 column 간의 유사도로 계산한다.
-        3. Column - TSD의 각 요소가 row와 column간의 유사도이다.
+        1. ROW - 차원간의 유사도 U X S 행렬의 row 간의 유사도로 계산한다.
+        2. ROW와 Column - ROW S X V 행렬의 column 간의 유사도로 계산한다.
+        3. Column - USV의 각 요소가 row와 column간의 유사도이다.
         */
 
         SvdDto svdDto = lsaModelComponent.fit(matrix, 5);
