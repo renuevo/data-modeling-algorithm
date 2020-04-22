@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 public class LevenshteinService {
 
     public void levenshteinExample() {
-        String text1 = "글자테스트";
-        String text2 = "한글테스트";
-
+        String text1 = "유사도 분석을 할까요";
+        String text2 = "얼마나 분석이 될까요";
         int ex1 = LevenshteinUtils.getDistance(text1, text2);
         log.info(text1 + " / " + text2 + " = " + ex1);
     }
