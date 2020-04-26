@@ -42,8 +42,8 @@ public class LevenshteinUtils {
                 else matchCost = 0;
 
                 // 대체, 삽입, 삭제의 비용을 계산한다
-                int replace = costList.get(j - 1) + matchCost; //변경 비용
-                int insert = costList.get(j) + 1;                //삽입 비용
+                int replace = costList.get(j - 1) + matchCost;      //변경 비용
+                int insert = costList.get(j) + 1;                  //삽입 비용
                 int delete = newCostList.get(j - 1) + 1;           //삭제 비용
 
                 newCostList.add(j, Ints.min(replace, insert, delete));  //최소 비용 계산

@@ -4,5 +4,6 @@
 
 
 ## List
-[LSA (잠재의미 분석)](https://github.com/renuevo/data-modeling-algorithm/tree/master/lsa)
+[LSA (잠재의미 분석)](https://github.com/renuevo/data-modeling-algorithm/tree/master/lsa)  
+[Levenshtein Distance (레벤슈타인 알고리즘 / 편집거리)](https://github.com/renuevo/data-modeling-algorithm/tree/master/levenshtein-distance)  
 
