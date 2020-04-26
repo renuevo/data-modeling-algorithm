@@ -1,8 +1,3 @@
----
-title: "[DataScience] Levenshtein Distance (편집거리 알고리즘) - 문장 유사도 분석을 어떻게 하는가?"
-date: 2020-04-22
-category: 'Data Science'
----  
 # Levenshtein Distance (편집거리 알고리즘)
 `Levenshtein Distance`는 러시아의 과학자 [블라디미르 리벤슈테인](https://en.wikipedia.org/wiki/Vladimir_Levenshtein)가 고안한 알고리즘  
 
